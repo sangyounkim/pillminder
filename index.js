@@ -6,6 +6,7 @@ const user = require('./api/user');
 const userError = require('./userError');
 
 var HttpStatus = require('http-status-codes');
+const scheduler = require('./api/scheduler');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -121,6 +122,28 @@ app.post('/:id/open', function(req, res) {
         .catch(function(error) {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({'error': error});
         });
+});
+/*
+ * {
+ *      "runAt": Date(),
+ *      "daily_frequency": "every x hours",
+ *      // the above two can be preset with multi-select options: ["morning", "noon", "evening"]
+ *      //      morning: 8:00 am
+ *      //      noon: 12:00 pm
+ *      //      evening: 6:00 pm
+ *      // let user redefine the times, if they want to
+ *      "repeat": "every x days"
+ * }
+ */
+app.post('/reminder', function(req, res) {
+    const {runAt, repeat} = req.body;
+
+    // TODO: figure out user's apns token from their username
+    const notificationToken = '';
+
+    return scheduler
+      .schedule({ runAt, repeat, notificationToken })
+      .then(() => res.status(200).send('Reminder scheduled successfully'));
 });
 
 app.listen(process.env.PORT || 5000);

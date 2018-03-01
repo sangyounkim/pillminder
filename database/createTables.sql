@@ -21,3 +21,16 @@ create table "container" (
     last_opened TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY(user_id) REFERENCES user_info(id) ON DELETE CASCADE
 );
+
+create table "user_push_tokens" (
+    user_id INTEGER NOT NULL,
+    push_token TEXT NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES user_info(id) ON DELETE CASCADE
+);
+
+-- create table "reminders" (
+--     id SERIAL PRIMARY KEY NOT NULL,
+--     container_id INTEGER NOT NULL,
+--     remind_at TIMESTAMP NOT NULL,
+--     FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE
+-- );
