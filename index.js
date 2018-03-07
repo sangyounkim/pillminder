@@ -7,6 +7,7 @@ const userError = require('./userError');
 
 var HttpStatus = require('http-status-codes');
 const scheduler = require('./api/scheduler');
+const reminder = require('./api/reminder');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -123,6 +124,14 @@ app.post('/:id/open', function(req, res) {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({'error': error});
         });
 });
+
+app.get('/containers/:containerId/reminders', (req, res) => {
+    const { containerId } = req.params;
+
+    return reminder.get(containerId)
+      .then(reminders => res.status(HttpStatus.OK).send({ reminders }))
+      .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
+});
 /*
  * {
  *      "runAt": Date(),
@@ -135,15 +144,31 @@ app.post('/:id/open', function(req, res) {
  *      "repeat": "every x days"
  * }
  */
-app.post('/reminder', function(req, res) {
-    const {runAt, repeat} = req.body;
+app.post('/containers/:containerId/reminders', (req, res) => {
+    let { containerId } = req.params;
+    containerId = parseInt(containerId, 10);
+    const { repeat, runAt } = req.body;
 
     // TODO: figure out user's apns token from their username
-    const notificationToken = '';
+    const notificationToken = 'ExponentPushToken[WnAKx5Ji4sCe8A1GXaebCe]';
 
-    return scheduler
-      .schedule({ runAt, repeat, notificationToken })
-      .then(() => res.status(200).send('Reminder scheduled successfully'));
+    return scheduler.schedule({ containerId, notificationToken, repeat, runAt })
+      .then(() => reminder.add(containerId, runAt))
+      .then(() => res.status(HttpStatus.OK).send('Reminder scheduled successfully'))
+      .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
+});
+
+app.put('/containers/:containerId/reminders', (req, res) => {
+    let { containerId } = req.params;
+    containerId = parseInt(containerId, 10);
+    const { repeat, runAt } = req.body;
+
+    // TODO: figure out user's apns token from their username
+    const notificationToken = 'ExponentPushToken[WnAKx5Ji4sCe8A1GXaebCe]';
+
+    return scheduler.schedule({ containerId, notificationToken, repeat, runAt })
+      .then(() => res.status(HttpStatus.OK).send('Reminder rescheduled successfully'))
+      .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
 
 app.listen(process.env.PORT || 5000);

@@ -9,6 +9,7 @@ const config = {
 const db = pg(config);
 
 module.exports = {
+    pg,
     getConnection: function() {
         return db;
     }
