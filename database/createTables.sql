@@ -44,6 +44,7 @@ create table if not exists "drug_info" (
 create table if not exists "reminder" (
     container_id INTEGER NOT NULL,
     reminder_time TIME NOT NULL,
+    label TEXT NOT NULL,
     FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE
 );
 -- create table "reminders" (

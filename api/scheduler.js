@@ -1,8 +1,7 @@
 const amqp = require('amqplib');
 
 const q = 'default';
-const url =
-  'amqp://bbbkkxit:OCbM2iS8HsRAofj_drGSZdgCc2vJHJ4h@llama.rmq.cloudamqp.com/bbbkkxit';
+const url = 'amqp://bbbkkxit:OCbM2iS8HsRAofj_drGSZdgCc2vJHJ4h@llama.rmq.cloudamqp.com/bbbkkxit';
 const open = amqp.connect(url);
 
 module.exports = {
@@ -22,7 +21,7 @@ module.exports = {
             'container_id': containerId,
             'notification_token': notificationToken,
             repeat,
-            'run_at': runAt,
+            'run_at': runAt.map(({ time }) => time),
           };
           console.log(JSON.stringify(payload));
           return ch.sendToQueue(q, new Buffer(JSON.stringify(payload)));

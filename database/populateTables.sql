@@ -43,13 +43,13 @@ VALUES (
 );
 
 TRUNCATE TABLE reminder;
-INSERT INTO reminder (container_id, reminder_time)
-VALUES (4, '09:00');
-INSERT INTO reminder (container_id, reminder_time)
-VALUES (4, '12:30');
-INSERT INTO reminder (container_id, reminder_time)
-VALUES (4, '18:30');
-INSERT INTO reminder (container_id, reminder_time)
-VALUES (5, '09:30');
-INSERT INTO reminder (container_id, reminder_time)
-VALUES (5, '19:00');
+INSERT INTO reminder (container_id, reminder_time, label)
+VALUES (4, '09:00', 'morning');
+INSERT INTO reminder (container_id, reminder_time, label)
+VALUES (4, '12:30', 'afternoon');
+INSERT INTO reminder (container_id, reminder_time, label)
+VALUES (4, '18:30', 'evening');
+INSERT INTO reminder (container_id, reminder_time, label)
+VALUES (5, '09:30', 'morning');
+INSERT INTO reminder (container_id, reminder_time, label)
+VALUES (5, '19:00', 'evening');
