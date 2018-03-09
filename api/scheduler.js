@@ -5,7 +5,7 @@ const SCHEDULE = `${SCHEDULER_API}/scheduler/add`;
 const REMOVE = `${SCHEDULER_API}/scheduler/remove`;
 
 module.exports = {
-  schedule: async ({ containerId, notificationToken, frequency, times }) => {
+  schedule: async (notificationToken, reminders) => {
     try {
       const res = await fetch(SCHEDULE, {
         method: 'POST',
@@ -13,10 +13,8 @@ module.exports = {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          'container_id': containerId,
           'notification_token': notificationToken,
-          'frequency': frequency,
-          'times': times.map(({ time }) => time),
+          'reminders': reminders,
         })
       });
       const data = await res.json();

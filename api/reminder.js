@@ -6,7 +6,7 @@ const db = require('../database/config');
 const { pg } = db;
 const connection = db.getConnection();
 const reminderColSet = new pg.helpers.ColumnSet(
-  ['container_id', 'reminder_time', 'label', 'frequency', 'job_id'],
+  ['container_id', 'reminder_time', 'label', 'frequency'],
   { table: 'reminder' }
 );
 
@@ -31,17 +31,21 @@ async function getJobId(reminderId) {
 
 module.exports = {
 
-  add: ({ containerId, times, frequency, scheduledJobs }) => {
-    const values = times.map(({ label, time }, index) => ({
+  add: async ({ containerId, times, frequency }) => {
+    const values = times.map(({ label, time }) => ({
       'container_id': containerId,
       'reminder_time': moment.utc(time).format('HH:mm'),
       'label': label,
       'frequency': frequency,
-      'job_id': scheduledJobs[index].id,
     }));
-    const query = pg.helpers.insert(values, reminderColSet);
+    const query = pg.helpers.insert(values, reminderColSet) + 'RETURNING id, container_id, reminder_time, label, frequency';
 
-    return connection.none(query);
+    try {
+      return await connection.many(query);
+    } catch (e) {
+      throw new Error('Failed to add reminders.');
+      console.error(e);
+    }
   },
 
   get: containerId => {
@@ -51,6 +55,13 @@ module.exports = {
         [containerId]
       )
       .then(rows => rows.map(r => new Reminder(r)));
+  },
+
+  updateJobId: reminders => {
+    return connection.tx(t => {
+      const queries = reminders.map(r => t.none('UPDATE reminder SET job_id = $1 WHERE id = $2', [r.job_id, r.id]));
+      return t.batch(queries);
+    });
   },
 
   remove: async (reminderId) => {

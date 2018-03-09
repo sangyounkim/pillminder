@@ -8,6 +8,7 @@ const userError = require('./userError');
 var HttpStatus = require('http-status-codes');
 const scheduler = require('./api/scheduler');
 const reminder = require('./api/reminder');
+const notification = require('./api/notification');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -152,8 +153,7 @@ app.post('/containers/:containerId/reminders', (req, res) => {
     // TODO: figure out user's apns token from their username
     const notificationToken = 'ExponentPushToken[WnAKx5Ji4sCe8A1GXaebCe]';
 
-    return scheduler.schedule({ containerId, notificationToken, frequency, times })
-      .then(scheduledJobs => reminder.add({ containerId, times, frequency, scheduledJobs }))
+    return notification.schedule({ containerId, notificationToken, frequency, times })
       .then(() => res.status(HttpStatus.OK).send('Reminder scheduled successfully.'))
       .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
