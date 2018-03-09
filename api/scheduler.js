@@ -1,31 +1,41 @@
-const amqp = require('amqplib');
+const fetch = require('node-fetch');
 
-const q = 'default';
-const url = 'amqp://bbbkkxit:OCbM2iS8HsRAofj_drGSZdgCc2vJHJ4h@llama.rmq.cloudamqp.com/bbbkkxit';
-const open = amqp.connect(url);
+const SCHEDULER_API = 'http://localhost:5000';
+const SCHEDULE = `${SCHEDULER_API}/scheduler/add`;
+const REMOVE = `${SCHEDULER_API}/scheduler/remove`;
 
 module.exports = {
-  schedule: function({ containerId, notificationToken, repeat, runAt }) {
-    if (!runAt) return;
-    if (Array.isArray(runAt) && runAt.length === 0) return;
-
-    if (!Array.isArray(runAt)) {
-      runAt = [runAt];
-    }
-
-    return open
-      .then(conn => {
-        const ok = conn.createChannel();
-        return ok.then(ch => {
-          const payload = {
-            'container_id': containerId,
-            'notification_token': notificationToken,
-            repeat,
-            'run_at': runAt.map(({ time }) => time),
-          };
-          console.log(JSON.stringify(payload));
-          return ch.sendToQueue(q, new Buffer(JSON.stringify(payload)));
-        });
+  schedule: async ({ containerId, notificationToken, frequency, times }) => {
+    try {
+      const res = await fetch(SCHEDULE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'container_id': containerId,
+          'notification_token': notificationToken,
+          'frequency': frequency,
+          'times': times.map(({ time }) => time),
+        })
       });
-  } 
+      const data = await res.json();
+      const { scheduled_jobs = []} = data;
+  
+      return scheduled_jobs;
+    } catch (e) {
+      throw new Error('Failed to schedule jobs through scheduler API');
+      console.error(e);
+    }
+  },
+
+  remove: async (jobId) => {
+    try {
+      const res = await fetch(REMOVE + '/' + jobId, { method: 'DELETE' });
+      return res.ok;
+    } catch (e) {
+      throw new Error('Failed to remove jobs through scheduler API');
+      console.error(e);
+    }
+  },
 };

@@ -147,28 +147,23 @@ app.get('/containers/:containerId/reminders', (req, res) => {
 app.post('/containers/:containerId/reminders', (req, res) => {
     let { containerId } = req.params;
     containerId = parseInt(containerId, 10);
-    const { repeat, runAt } = req.body;
+    const { frequency, times } = req.body;
 
     // TODO: figure out user's apns token from their username
     const notificationToken = 'ExponentPushToken[WnAKx5Ji4sCe8A1GXaebCe]';
 
-    return scheduler.schedule({ containerId, notificationToken, repeat, runAt })
-      .then(() => reminder.add(containerId, runAt))
-      .then(() => res.status(HttpStatus.OK).send('Reminder scheduled successfully'))
+    return scheduler.schedule({ containerId, notificationToken, frequency, times })
+      .then(scheduledJobs => reminder.add({ containerId, times, frequency, scheduledJobs }))
+      .then(() => res.status(HttpStatus.OK).send('Reminder scheduled successfully.'))
       .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
 
-app.put('/containers/:containerId/reminders', (req, res) => {
-    let { containerId } = req.params;
-    containerId = parseInt(containerId, 10);
-    const { repeat, runAt } = req.body;
-
-    // TODO: figure out user's apns token from their username
-    const notificationToken = 'ExponentPushToken[WnAKx5Ji4sCe8A1GXaebCe]';
-
-    return scheduler.schedule({ containerId, notificationToken, repeat, runAt })
-      .then(() => res.status(HttpStatus.OK).send('Reminder rescheduled successfully'))
-      .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
+app.delete('/containers/:containerId/reminders/:reminderId', (req, res) => {
+    const { reminderId } = req.params;
+    return reminder.remove(reminderId)
+        .then((jobId) => scheduler.remove(jobId))
+        .then(() => res.status(HttpStatus.OK).send('Reminder removed successfully.'))
+        .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
 
-app.listen(process.env.PORT || 5000);
+app.listen(process.env.PORT || 5001);
