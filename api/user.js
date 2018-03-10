@@ -10,7 +10,7 @@ const ADD_DEVICE_TOKEN = "INSERT INTO device_token (id, device_token) VALUES ($1
 const CHECK_EMAIL = "SELECT id FROM user_info WHERE email = $1";
 const GET_PASSWORD = "SELECT password, id FROM user_info WHERE email = $1";
 const GET_DEVICE_TOKEN = "SELECT device_token FROM device_token WHERE id = $1";
-const GET_CONTAINERS = "SELECT * FROM container JOIN drug_info ON pill_type = brand_name WHERE user_id = $1";
+const GET_CONTAINERS = "SELECT * FROM container LEFT JOIN drug_info ON pill_type = brand_name WHERE user_id = $1";
 
 module.exports = {
     checkEmail: function(email) {

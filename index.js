@@ -102,16 +102,21 @@ app.get('/:id/containers', function(req, res) {
         });
 });
 
-app.post('/:id/open', function(req, res) {
-    var id = req.params.id;
+app.post('/:id/containers', (req, res) => {
+    const { id } = req.params;
+    const { containerId, pillType } = req.body;
+
+    container.register(containerId, { pillType, userId: id })
+        .then(() => res.status(HttpStatus.OK).send())
+        .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
+});
+
+app.post('/:id/open', (req, res) => {
+    const { id } = req.params;
 
     container.open(id)
-        .then(function() {
-            res.status(HttpStatus.OK).send();
-        })
-        .catch(function(error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({'error': error});
-        });
+        .then(() => res.status(HttpStatus.OK).send())
+        .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
 
 app.get('/containers/:containerId/reminders', (req, res) => {
