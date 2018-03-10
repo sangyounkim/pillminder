@@ -102,18 +102,6 @@ app.get('/:id/containers', function(req, res) {
         });
 });
 
-app.get('/:id/remind', function(req, res) {
-   var id = req.params.id;
-
-   container.remind(id)
-       .then(function(remind) {
-           res.status(HttpStatus.OK).send({'remind': remind});
-       })
-       .catch(function(error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({'error': error});
-       });
-});
-
 app.post('/:id/open', function(req, res) {
     var id = req.params.id;
 
@@ -133,30 +121,29 @@ app.get('/containers/:containerId/reminders', (req, res) => {
       .then(reminders => res.status(HttpStatus.OK).send({ reminders }))
       .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
-/*
- * {
- *      "runAt": Date(),
- *      "daily_frequency": "every x hours",
- *      // the above two can be preset with multi-select options: ["morning", "noon", "evening"]
- *      //      morning: 8:00 am
- *      //      noon: 12:00 pm
- *      //      evening: 6:00 pm
- *      // let user redefine the times, if they want to
- *      "repeat": "every x days"
- * }
- */
+
 app.post('/containers/:containerId/reminders', (req, res) => {
     let { containerId } = req.params;
     containerId = parseInt(containerId, 10);
-    const { frequency, times } = req.body;
+    const { frequency, overdueInterval, times } = req.body;
 
     // TODO: figure out user's apns token from their username
     const notificationToken = 'ExponentPushToken[WnAKx5Ji4sCe8A1GXaebCe]';
 
-    return notification.schedule({ containerId, notificationToken, frequency, times })
+    return notification.schedule({ containerId, notificationToken, frequency, overdueInterval, times })
       .then(() => res.status(HttpStatus.OK).send('Reminder scheduled successfully.'))
       .catch(error => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
 });
+
+app.get('/containers/:containerId/reminders/:reminderId', function(req, res) {
+    let { containerId, reminderId } = req.params;
+    containerId = parseInt(containerId, 10);
+    reminderId = parseInt(reminderId, 10);
+ 
+    container.remind(containerId, reminderId)
+        .then((remind) => res.status(HttpStatus.OK).send({ remind }))
+        .catch((error) => res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error }));
+ });
 
 app.delete('/containers/:containerId/reminders/:reminderId', (req, res) => {
     const { reminderId } = req.params;

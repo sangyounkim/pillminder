@@ -16,9 +16,7 @@ create table if not exists "container" (
     id INTEGER PRIMARY KEY NOT NULL,
     user_id INTEGER NOT NULL,
     pill_type TEXT,
-    reminder_time TIME NOT NULL,
-    frequency INTEGER NOT NULL,
-    last_opened TIMESTAMP DEFAULT NOW(),
+    last_opened TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'utc'),
     FOREIGN KEY(user_id) REFERENCES user_info(id) ON DELETE CASCADE
 );
 
@@ -42,14 +40,11 @@ create table if not exists "drug_info" (
 );
 
 create table if not exists "reminder" (
+    id SERIAL PRIMARY KEY NOT NULL,
     container_id INTEGER NOT NULL,
     reminder_time TIME NOT NULL,
     label TEXT NOT NULL,
+    frequency TEXT NOT NULL,
+    job_id TEXT,
     FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE
 );
--- create table "reminders" (
---     id SERIAL PRIMARY KEY NOT NULL,
---     container_id INTEGER NOT NULL,
---     remind_at TIMESTAMP NOT NULL,
---     FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE
--- );

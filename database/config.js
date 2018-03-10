@@ -1,4 +1,5 @@
-const pg = require('pg-promise')();
+const pgp = require('pg-promise')();
+pgp.pg.types.setTypeParser(1114, s => s);
 
 const config = {
     // ssl: true,
@@ -6,10 +7,10 @@ const config = {
     port: 5432,
     database: 'sangyounkim'
 };
-const db = pg(config);
+const db = pgp(config);
 
 module.exports = {
-    pg,
+    pgp,
     getConnection: function() {
         return db;
     }

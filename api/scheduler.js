@@ -5,7 +5,7 @@ const SCHEDULE = `${SCHEDULER_API}/scheduler/add`;
 const REMOVE = `${SCHEDULER_API}/scheduler/remove`;
 
 module.exports = {
-  schedule: async (notificationToken, reminders) => {
+  schedule: async (notificationToken, { reminders, overdueInterval }) => {
     try {
       const res = await fetch(SCHEDULE, {
         method: 'POST',
@@ -15,6 +15,7 @@ module.exports = {
         body: JSON.stringify({
           'notification_token': notificationToken,
           'reminders': reminders,
+          'overdue_interval': overdueInterval,
         })
       });
       const data = await res.json();

@@ -6,19 +6,18 @@ INSERT INTO device_token
 SELECT id, '12345' FROM user_info WHERE email = 'k85chen@edu.uwaterloo.ca';
 
 INSERT INTO container
-SELECT 1, id, 'Reactine', '21:00:00', '24', NOW() FROM user_info WHERE email = 'k85chen@edu.uwaterloo.ca';
+SELECT 1, id, 'Reactine', NOW() AT TIME ZONE 'utc' FROM user_info WHERE email = 'k85chen@edu.uwaterloo.ca';
 INSERT INTO container
-SELECT 2, id, 'Test', '10:00:00', '12', NOW() FROM user_info WHERE email = 'k85chen@edu.uwaterloo.ca';
+SELECT 2, id, 'Test', NOW() AT TIME ZONE 'utc' FROM user_info WHERE email = 'k85chen@edu.uwaterloo.ca';
 INSERT INTO container
-SELECT 3, id, 'TYLENOL Regular Strength', '10:00:00', '12', NOW() FROM user_info WHERE email = 's@k';
+SELECT 3, id, 'TYLENOL Regular Strength', NOW() AT TIME ZONE 'utc' FROM user_info WHERE email = 's@k';
 INSERT INTO container
-SELECT 4, id, 'ADVIL', '10:00:00', '12', NOW() FROM user_info WHERE email = 's@k';
+SELECT 4, id, 'ADVIL', NOW() AT TIME ZONE 'utc' FROM user_info WHERE email = 's@k';
 INSERT INTO container
-SELECT 5, id, 'Reactine', '10:00:00', '12', NOW() FROM user_info WHERE email = 's@k';
+SELECT 5, id, 'Reactine', NOW() AT TIME ZONE 'utc' FROM user_info WHERE email = 's@k';
 
 INSERT INTO user_push_token (user_id, push_token)
 SELECT id, 'gibberish_token_xyz' FROM user_info WHERE email = 'k85chen@edu.uwaterloo.ca';
--- INSERT INTO notification_job (run_at) VALUES (current_timestamp + interval '6 minute');
 
 TRUNCATE TABLE drug_info;
 INSERT INTO drug_info (brand_name, indications_and_usage, purpose, manufacturer_name, substance_name, brand_primary_color, brand_secondary_color)
@@ -43,13 +42,13 @@ VALUES (
 );
 
 TRUNCATE TABLE reminder;
-INSERT INTO reminder (container_id, reminder_time, label)
-VALUES (4, '09:00', 'morning');
-INSERT INTO reminder (container_id, reminder_time, label)
-VALUES (4, '12:30', 'afternoon');
-INSERT INTO reminder (container_id, reminder_time, label)
-VALUES (4, '18:30', 'evening');
-INSERT INTO reminder (container_id, reminder_time, label)
-VALUES (5, '09:30', 'morning');
-INSERT INTO reminder (container_id, reminder_time, label)
-VALUES (5, '19:00', 'evening');
+INSERT INTO reminder (container_id, reminder_time, label, frequency)
+VALUES (3, '09:00', 'morning', 24);
+INSERT INTO reminder (container_id, reminder_time, label, frequency)
+VALUES (3, '12:30', 'afternoon', 24);
+INSERT INTO reminder (container_id, reminder_time, label, frequency)
+VALUES (3, '18:30', 'evening', 24);
+INSERT INTO reminder (container_id, reminder_time, label, frequency)
+VALUES (4, '09:30', 'morning', 24);
+INSERT INTO reminder (container_id, reminder_time, label, frequency)
+VALUES (4, '19:00', 'evening', 24);

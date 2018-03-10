@@ -3,9 +3,9 @@ const _ = require('lodash');
 
 const db = require('../database/config');
 
-const { pg } = db;
+const { pgp } = db;
 const connection = db.getConnection();
-const reminderColSet = new pg.helpers.ColumnSet(
+const reminderColSet = new pgp.helpers.ColumnSet(
   ['container_id', 'reminder_time', 'label', 'frequency'],
   { table: 'reminder' }
 );
@@ -38,7 +38,7 @@ module.exports = {
       'label': label,
       'frequency': frequency,
     }));
-    const query = pg.helpers.insert(values, reminderColSet) + 'RETURNING id, container_id, reminder_time, label, frequency';
+    const query = pgp.helpers.insert(values, reminderColSet) + 'RETURNING id, container_id, reminder_time, label, frequency';
 
     try {
       return await connection.many(query);
