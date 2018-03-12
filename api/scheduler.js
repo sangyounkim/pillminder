@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const SCHEDULER_API = 'http://localhost:5000';
+const SCHEDULER_API = process.env.PMSCHEDULER_URL || 'http://127.0.0.1:5000';
 const SCHEDULE = `${SCHEDULER_API}/scheduler/add`;
 const REMOVE = `${SCHEDULER_API}/scheduler/remove`;
 
