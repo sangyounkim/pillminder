@@ -75,6 +75,20 @@ module.exports = {
       throw new Error('Failed to delete reminder.')
       console.error(e);
     }
+  },
+
+  removeAll: async (containerId) => {
+    try {
+      const rows = await connection.query(
+        'DELETE FROM reminder WHERE container_id = $1 RETURNING job_id;',
+        [containerId],
+      );
+
+      return rows.map(({ job_id }) => job_id);
+    } catch (e) {
+      throw new Error('Failed to remove reminders.');
+      console.error(e);
+    }
   }
 
 };

@@ -37,4 +37,22 @@ module.exports = {
       console.error(e);
     }
   },
+
+  removeAll: async (jobIdList) => {
+    try {
+      const res = await fetch(REMOVE, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'jobs': jobIdList,
+        }),
+      });
+      return res.ok;
+    } catch (e) {
+      throw new Error('Failed to remove jobs through scheduler API');
+      console.error(e);
+    }
+  }
 };
